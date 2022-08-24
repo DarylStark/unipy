@@ -1,0 +1,17 @@
+# Exclude Python cache files
+*.pyc
+__pycache__
+.pytest_cache
+
+# Exclude Python vritual environments
+env*
+
+# Exclude VIM swap files
+*swp
+
+# Exclude IDE files
+.vscode/
+
+# Exclude test scripts
+src/test.py
+api_endpoints.md
