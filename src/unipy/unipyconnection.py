@@ -1,3 +1,5 @@
+""" Module that contains the class to connect to Unifi """
+
 from requests import Request, Response, Session
 from requests.exceptions import Timeout, ConnectionError
 import urllib3

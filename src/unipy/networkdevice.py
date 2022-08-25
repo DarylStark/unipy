@@ -1,3 +1,5 @@
+""" Module that contains dataclasses for network devices """
+
 import requests
 import urllib3
 from typing import Optional
