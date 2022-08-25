@@ -5,10 +5,12 @@ import urllib3
 from typing import Optional
 from dataclasses import dataclass, fields
 from logging import getLogger
+from unipy.unipyapplication import UnipyApplication
+from unipy.unipyobject import UnipyObject
 
 
 @dataclass
-class UnipyNetworkDevice:
+class NetworkDevice(UnipyObject):
     """ Dataclass containing all the fields for network devices
 
         Members
@@ -53,7 +55,9 @@ class UnipyNetworkDevice:
     rx_bytes: int = None
     x_has_ssh_hostkey: bool = None
 
-    def __init__(self, data: Optional[dict] = None) -> None:
+    def __init__(self,
+                 data: Optional[dict] = None,
+                 binding: Optional[UnipyApplication] = None) -> None:
         """ Sets the values
 
             Parameters
@@ -66,76 +70,11 @@ class UnipyNetworkDevice:
             -------
             None
         """
-        # Create a logger
-        self.logger = getLogger(f'UnipyNetworkDevice')
-
-        self.binding = None
-        if data:
-            self.set_from_dict(data)
-
-    def bind(self, unipynet_object: 'UnipyNetwork') -> None:
-        """ Method to bind this object to a UnipyNetwork
-            object.
-
-            Parameters
-            ----------
-            unipynet_object : UnipyNetwork
-                The UnipyNetwork object to bind
-
-            Returns
-            -------
-            None
-        """
-        self.binding = unipynet_object
-
-    def set_from_dict(self, data: dict) -> None:
-        """ Method to set the values from a dict that comes
-            from the API.
-
-            Parameters
-            ----------
-            data : Optional[dict]
-                Data used to fill the object
-
-            Returns
-            -------
-            None
-
-            Parameters
-            ----------
-            Parameters and their types
-
-            Returns
-            -------
-            Return values
-        """
-
-        # Loop through the fields of this object and set them
-        # if given in the data
-        for field in fields(self):
-            fieldname = field.name
-            possible_fields = [
-                field.name,
-                field.name.replace('_', '-')
-            ]
-            for possible_field in possible_fields:
-                if possible_field in data.keys():
-                    fieldname = possible_field
-                    break
-
-            if fieldname in data.keys():
-                if type(data[fieldname]) is not field.type:
-                    self.logger.warning(
-                        f'FIELD ERROR: {fieldname} should be {field.type}, is {type(data[fieldname])}')
-                    continue
-                setattr(self, field.name, data[fieldname])
-            else:
-                self.logger.error(
-                    f'FIELD ERROR: {field.name} defined but not in data')
+        super().__init__(data, binding)
 
 
 @dataclass
-class UnipyNetworkDeviceUSG(UnipyNetworkDevice):
+class NetworkDeviceUSG(NetworkDevice):
     """ Dataclass for a USG device
 
         Members
@@ -146,5 +85,19 @@ class UnipyNetworkDeviceUSG(UnipyNetworkDevice):
     """
     speedtest_status_saved: bool = None
 
-    def __init__(self, data: Optional[dict] = None) -> None:
-        super().__init__(data)
+    def __init__(self,
+                 data: Optional[dict] = None,
+                 binding: Optional[UnipyApplication] = None) -> None:
+        """ Sets the values
+
+            Parameters
+            ----------
+            data : Optional[dict]
+                If given, this data is used to fill the
+                object
+
+            Returns
+            -------
+            None
+        """
+        super().__init__(data, binding)

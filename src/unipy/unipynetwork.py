@@ -3,7 +3,9 @@
 
 from typing import Optional
 from unipy.unipyconnection import UnipyConnection
-from unipy.networkdevice import UnipyNetworkDevice, UnipyNetworkDeviceUSG
+from unipy.networkdevice import NetworkDevice, NetworkDeviceUSG
+from unipy.networkportforward import NetworkPortForward
+from logging import getLogger
 
 
 class UnipyNetwork:
@@ -24,8 +26,10 @@ class UnipyNetwork:
             None
         """
         self.connection = connection
+        self.logger = getLogger(
+            f'UnipyNetwork https://{connection.server}/')
 
-    def get_devices(self) -> list[UnipyNetworkDevice]:
+    def get_devices(self) -> list[NetworkDevice]:
         """ Method to get all network devices
 
             Parameters
@@ -34,7 +38,7 @@ class UnipyNetwork:
 
             Returns
             -------
-            list[UnipyNetworkDevice]
+            list[NetworkDevice]
                 A list with network devices
         """
 
@@ -49,35 +53,69 @@ class UnipyNetwork:
 
         # Get the data and convert it to objects
         data = resources.json()['data']
-        devices = [self.device_factory(device) for device in data]
+        resources_converted = [self.device_factory(
+            resource) for resource in data]
 
         # Return the devicelist
-        return devices
+        return resources_converted
 
-    def device_factory(self, data: dict) -> UnipyNetworkDevice:
-        """ Method to create a UnipyNetworkDevice object of
+    def get_port_forwards(self) -> list[NetworkPortForward]:
+        """ Method to get all port forwards
+
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            list[UnipyNetworkPortForward]
+                A list with network devices
+        """
+
+        # If not logged in; login
+        if self.connection.logged_in:
+            self.connection.login()
+
+        # Execute the API request
+        resources = self.connection.request(
+            method='GET',
+            endpoint='proxy/network/api/s/default/rest/portforward')
+
+        # Get the data and convert it to objects
+        data = resources.json()['data']
+        resources_converted = [NetworkPortForward(
+            resource) for resource in data]
+
+        # Return the devicelist
+        return resources_converted
+
+    def device_factory(self, data: dict) -> NetworkDevice:
+        """ Method to create a NetworkDevice object of
             the correct type.
 
             Parameters
             ----------
             data : dict
                 A dictionary with the data to be used to
-                create a UnipyNetworkDevice object.
+                create a NetworkDevice object.
 
             Returns
             -------
-            UnipyNetworkDevice
+            NetworkDevice
                 The created object
         """
         # Object types
         object_types = {
-            'ugw': UnipyNetworkDeviceUSG
+            'ugw': NetworkDeviceUSG
         }
 
         # Find the correct class
-        class_object = UnipyNetworkDevice
+        class_object = NetworkDevice
         if data['type'] in object_types.keys():
             class_object = object_types[data['type']]
+        else:
+            self.logger.warning(
+                f'No class configured for devicetype "{data["type"]}"')
 
         # Create the object
         new_object = class_object(data)

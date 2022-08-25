@@ -39,7 +39,7 @@ class UnipyConnection:
         """
         # Create a logger
         self.logger = getLogger(
-            f'UnipyConnection_{username}@{server}')
+            f'UnipyConnection - https://{server}/')
 
         # Set the default values
         self.username = username
@@ -90,6 +90,7 @@ class UnipyConnection:
             json=data)
 
         # Prepare the request
+        self.logger.debug(f'Starting API request to "{url}"')
         prep = self.session.prepare_request(request)
         try:
             api_request = self.session.send(prep)
@@ -98,6 +99,9 @@ class UnipyConnection:
                 f'Unable to connect to Unifi server "{self.server}"')
             # TODO: Raise correct exception
             raise PermissionDeniedError()
+
+        self.logger.debug(
+            f'Request for URL "{url}" done in {api_request.elapsed.microseconds / 1000} milliseconds')
 
         if api_request.status_code == 403:
             raise PermissionDeniedError(

@@ -1,7 +1,7 @@
 """ Module that contains the Unipy class """
 
 from unipy.unipyconnection import UnipyConnection
-from unipy.network import UnipyNetwork
+from unipy.unipynetwork import UnipyNetwork
 
 
 class Unipy:
