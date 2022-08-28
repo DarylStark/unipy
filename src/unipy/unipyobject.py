@@ -3,15 +3,23 @@
 
 from dataclasses import dataclass, fields
 from logging import getLogger
-from typing import Optional
+from typing import Optional, Any
 from unipy.unipyapplication import UnipyApplication
 
 
 @dataclass
+class ObjectField:
+    type: type
+    api_field: str
+    default: Any = None
+
+
 class UnipyObject:
     """ Dataclass containing all the methods for objects from
         the API
     """
+
+    object_model = dict()
 
     def __init__(self,
                  data: Optional[dict] = None,
@@ -31,9 +39,54 @@ class UnipyObject:
         # Create a logger
         self.logger = getLogger(type(self).__name__)
 
+        # Inherit the fields
+        self.set_fields()
+
+        # Set the binding
         self.binding: Optional[UnipyApplication] = binding
+
+        # Empty dict with API fields
+        self.api_fields = dict()
+
+        # Loop through all fields in the model, set the
+        # default value and add it to the API cache
+        for field, model in self.object_model.items():
+            self.api_fields[model.api_field] = field
+            if model.default:
+                setattr(self, field, model.default)
+            else:
+                setattr(self, field, model.type())
+
         if data:
-            self.set_from_dict(data)
+            self.set_from_api(data)
+
+    def set_fields(self) -> None:
+        """ Method that makes sure the model is inherited
+            from base classes
+
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            None
+        """
+        # Get the path till we reach the last base class
+        base_path = list()
+        current_base = self.__class__
+        while current_base is not object:
+            bases = current_base.__bases__
+            if bases[0] is not object:
+                base_path.insert(0, bases[0])
+            current_base = bases[0]
+
+        # Merge all models
+        new_model = base_path[0].object_model
+        for base in base_path[1:]:
+            new_model.update(base.object_model)
+        new_model.update(self.object_model)
+        self.object_model = new_model
 
     def bind(self, unipynet_object: UnipyApplication) -> None:
         """ Method to bind this object to a UnipyNetwork
@@ -50,7 +103,7 @@ class UnipyObject:
         """
         self.binding = unipynet_object
 
-    def set_from_dict(self, data: dict) -> None:
+    def set_from_api(self, data: dict) -> None:
         """ Method to set the values from a dict that comes
             from the API.
 
@@ -71,26 +124,12 @@ class UnipyObject:
             -------
             Return values
         """
-
-        # Loop through the fields of this object and set them
-        # if given in the data
-        for field in fields(self):
-            fieldname = field.name
-            possible_fields = [
-                field.name,
-                field.name.replace('_', '-')
-            ]
-            for possible_field in possible_fields:
-                if possible_field in data.keys():
-                    fieldname = possible_field
-                    break
-
-            if fieldname in data.keys():
-                if type(data[fieldname]) is not field.type:
-                    self.logger.warning(
-                        f'Field "{fieldname}" is defined as "{field.type.__name__}", but "{type(data[fieldname]).__name__}" is given in the data')
-                    continue
-                setattr(self, field.name, data[fieldname])
-            else:
-                self.logger.error(
-                    f'FIELD ERROR: {field.name} defined but not in data')
+        for field, value in data.items():
+            if field in self.api_fields:
+                field_name = self.api_fields[field]
+                field_type = self.object_model[field_name].type
+                if type(value) is not field_type:
+                    value = field_type(value)
+                else:
+                    print(type(value))
+                setattr(self, field_name, value)
