@@ -42,7 +42,7 @@ class NetworkDevice(UnipyObject):
         'snmp_location': ObjectField(type=str, api_field='snmp_location'),
         'connected_at': ObjectField(type=int, api_field='connected_at'),
         'provisioned_at': ObjectField(type=int, api_field='provisioned_at'),
-        'device_id': ObjectField(type=str, api_field='provisioned_at'),
+        'device_id': ObjectField(type=str, api_field='device_id'),
         'uplink': ObjectField(type=str, api_field='uplink'),
         'state': ObjectField(type=int, api_field='state'),
         'last_seen': ObjectField(type=int, api_field='last_seen'),

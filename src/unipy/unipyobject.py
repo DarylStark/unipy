@@ -129,7 +129,7 @@ class UnipyObject:
                 field_name = self.api_fields[field]
                 field_type = self.object_model[field_name].type
                 if type(value) is not field_type:
+                    self.logger.warning(
+                        f'Field "{field_name}" should be of type "{field_type.__name__}" but API gives "{type(value).__name__}". Converting.')
                     value = field_type(value)
-                else:
-                    print(type(value))
                 setattr(self, field_name, value)
