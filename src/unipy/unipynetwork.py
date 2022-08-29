@@ -2,6 +2,7 @@
     can be used to use the `network` application """
 
 from typing import Optional
+from unipy.networkclient import NetworkActiveClient, NetworkInactiveClient
 from unipy.unipyconnection import UnipyConnection
 from unipy.networkdevice import NetworkDevice, NetworkDeviceUAP, NetworkDeviceUGW, NetworkDeviceUSW
 from unipy.networkportforward import NetworkPortForward
@@ -54,6 +55,66 @@ class UnipyNetwork:
         # Get the data and convert it to objects
         data = resources.json()['data']
         resources_converted = [self.device_factory(
+            resource) for resource in data]
+
+        # Return the devicelist
+        return resources_converted
+
+    def get_active_clients(self) -> list[NetworkActiveClient]:
+        """ Method to get all active network clients
+
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            list[NetworkActiveClient]
+                A list with network devices
+        """
+
+        # If not logged in; login
+        if self.connection.logged_in:
+            self.connection.login()
+
+        # Execute the API request
+        resources = self.connection.request(
+            method='GET',
+            endpoint='proxy/network/v2/api/site/default/clients/active')
+
+        # Get the data and convert it to objects
+        data = resources.json()
+        resources_converted = [NetworkActiveClient(
+            resource) for resource in data]
+
+        # Return the devicelist
+        return resources_converted
+
+    def get_inactive_clients(self) -> list[NetworkInactiveClient]:
+        """ Method to get all inactive network clients
+
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            list[NetworkActiveClient]
+                A list with network devices
+        """
+
+        # If not logged in; login
+        if self.connection.logged_in:
+            self.connection.login()
+
+        # Execute the API request
+        resources = self.connection.request(
+            method='GET',
+            endpoint='proxy/network/v2/api/site/default/clients/history?withinHours=0')
+
+        # Get the data and convert it to objects
+        data = resources.json()
+        resources_converted = [NetworkInactiveClient(
             resource) for resource in data]
 
         # Return the devicelist
