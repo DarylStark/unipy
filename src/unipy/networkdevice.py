@@ -98,3 +98,35 @@ class NetworkDeviceUSG(NetworkDevice):
             None
         """
         super().__init__(data, binding)
+
+
+class NetworkDeviceUSW(NetworkDevice):
+    """ Dataclass for a USW device
+
+        Members
+        -------
+        stp_version : str
+            The version of Spanning Tree that is used
+
+        stp_priority: int
+            The priority of Spanning Tree protocol
+    """
+    stp_version = ObjectField(type=str, api_field='stp_version')
+    stp_priority = ObjectField(type=int, api_field='stp_priority')
+
+    def __init__(self,
+                 data: Optional[dict] = None,
+                 binding: Optional[UnipyApplication] = None) -> None:
+        """ Sets the values
+
+            Parameters
+            ----------
+            data : Optional[dict]
+                If given, this data is used to fill the
+                object
+
+            Returns
+            -------
+            None
+        """
+        super().__init__(data, binding)
