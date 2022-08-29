@@ -3,7 +3,7 @@
 
 from typing import Optional
 from unipy.unipyconnection import UnipyConnection
-from unipy.networkdevice import NetworkDevice, NetworkDeviceUGW, NetworkDeviceUSW
+from unipy.networkdevice import NetworkDevice, NetworkDeviceUAP, NetworkDeviceUGW, NetworkDeviceUSW
 from unipy.networkportforward import NetworkPortForward
 from logging import getLogger
 
@@ -107,7 +107,8 @@ class UnipyNetwork:
         # Object types
         object_types = {
             'ugw': NetworkDeviceUGW,
-            'usw': NetworkDeviceUSW
+            'usw': NetworkDeviceUSW,
+            'uap': NetworkDeviceUAP
         }
 
         # Find the correct class

@@ -130,3 +130,35 @@ class NetworkDeviceUSW(NetworkDevice):
             None
         """
         super().__init__(data, binding)
+
+
+class NetworkDeviceUAP(NetworkDevice):
+    """ Dataclass for a UAP device
+
+        Members
+        -------
+        wifi_caps : int
+            WiFi statistics
+    """
+    wifi_caps = ObjectField(type=int, api_field='wifi_caps')
+    scanning = ObjectField(type=bool, api_field='scanning')
+    spectrum_scanning = ObjectField(type=bool, api_field='spectrum_scanning')
+    isolated = ObjectField(type=bool, api_field='isolate')
+    bandsteering_mode = ObjectField(type=str, api_field='bandsteering_mode')
+
+    def __init__(self,
+                 data: Optional[dict] = None,
+                 binding: Optional[UnipyApplication] = None) -> None:
+        """ Sets the values
+
+            Parameters
+            ----------
+            data : Optional[dict]
+                If given, this data is used to fill the
+                object
+
+            Returns
+            -------
+            None
+        """
+        super().__init__(data, binding)
