@@ -1,5 +1,4 @@
 """ Module that contains the class for Port Forwards """
-from dataclasses import dataclass
 from email.policy import default
 from typing import Optional
 from unipy.unipyapplication import UnipyApplication

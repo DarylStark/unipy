@@ -3,13 +3,10 @@
 import requests
 import urllib3
 from typing import Optional
-from dataclasses import dataclass, fields
-from logging import getLogger
 from unipy.unipyapplication import UnipyApplication
 from unipy.unipyobject import UnipyObject, ObjectField
 
 
-@dataclass
 class NetworkDevice(UnipyObject):
     """ Dataclass containing all the fields for network devices
 
@@ -73,7 +70,6 @@ class NetworkDevice(UnipyObject):
         super().__init__(data, binding)
 
 
-@dataclass
 class NetworkDeviceUSG(NetworkDevice):
     """ Dataclass for a USG device
 
