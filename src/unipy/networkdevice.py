@@ -70,8 +70,8 @@ class NetworkDevice(UnipyObject):
         super().__init__(data, binding)
 
 
-class NetworkDeviceUSG(NetworkDevice):
-    """ Dataclass for a USG device
+class NetworkDeviceUGW(NetworkDevice):
+    """ Dataclass for a UGW device
 
         Members
         -------
