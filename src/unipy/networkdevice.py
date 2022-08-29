@@ -1,19 +1,14 @@
 """ Module that contains dataclasses for network devices """
 
-import requests
-import urllib3
 from typing import Optional
 from unipy.unipyapplication import UnipyApplication
 from unipy.unipyobject import UnipyObject, ObjectField
 
 
 class NetworkDevice(UnipyObject):
-    """ Dataclass containing all the fields for network devices
+    """ Dataclass containing all the fields for network
+        devices """
 
-        Members
-        -------
-        Too much to describe
-    """
     id = ObjectField(type=str, api_field='_id')
     ipv4_address = ObjectField(type=str, api_field='ip')
     mac_address = ObjectField(type=str, api_field='mac')
@@ -71,14 +66,8 @@ class NetworkDevice(UnipyObject):
 
 
 class NetworkDeviceUGW(NetworkDevice):
-    """ Dataclass for a UGW device
+    """ Dataclass for a UGW device """
 
-        Members
-        -------
-        speedtest_status_saved : bool
-            Determines if the status of the speedtest is
-            saved
-    """
     speedtest_status_saved = ObjectField(
         type=bool, api_field='speedtest_status')
 
@@ -101,16 +90,8 @@ class NetworkDeviceUGW(NetworkDevice):
 
 
 class NetworkDeviceUSW(NetworkDevice):
-    """ Dataclass for a USW device
+    """ Dataclass for a USW device """
 
-        Members
-        -------
-        stp_version : str
-            The version of Spanning Tree that is used
-
-        stp_priority: int
-            The priority of Spanning Tree protocol
-    """
     stp_version = ObjectField(type=str, api_field='stp_version')
     stp_priority = ObjectField(type=int, api_field='stp_priority')
 
@@ -133,13 +114,8 @@ class NetworkDeviceUSW(NetworkDevice):
 
 
 class NetworkDeviceUAP(NetworkDevice):
-    """ Dataclass for a UAP device
+    """ Dataclass for a UAP device """
 
-        Members
-        -------
-        wifi_caps : int
-            WiFi statistics
-    """
     wifi_caps = ObjectField(type=int, api_field='wifi_caps')
     scanning = ObjectField(type=bool, api_field='scanning')
     spectrum_scanning = ObjectField(type=bool, api_field='spectrum_scanning')

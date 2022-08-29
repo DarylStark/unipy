@@ -1,17 +1,11 @@
 """ Module that contains the class for Port Forwards """
-from email.policy import default
 from typing import Optional
 from unipy.unipyapplication import UnipyApplication
 from unipy.unipyobject import UnipyObject, ObjectField
 
 
 class NetworkPortForward(UnipyObject):
-    """ Dataclass containing all the fields for port forwards
-
-        Members
-        -------
-        Too much to describe
-    """
+    """ Dataclass containing all the fields for port forwards """
 
     id = ObjectField(type=str, api_field='_id')
     enabled = ObjectField(type=bool, api_field='enabled', default=False)
