@@ -3,6 +3,7 @@
 
 from typing import Optional
 from unipy.networkclient import NetworkActiveClient, NetworkInactiveClient
+from unipy.networkssid import NetworkSSID
 from unipy.unipyconnection import UnipyConnection
 from unipy.networkdevice import NetworkDevice, NetworkDeviceUAP, NetworkDeviceUGW, NetworkDeviceUSW
 from unipy.networkportforward import NetworkPortForward
@@ -145,6 +146,36 @@ class UnipyNetwork:
         # Get the data and convert it to objects
         data = resources.json()['data']
         resources_converted = [NetworkPortForward(
+            resource) for resource in data]
+
+        # Return the devicelist
+        return resources_converted
+
+    def get_ssids(self) -> list[NetworkSSID]:
+        """ Method to get all SSIDs
+
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            list[NetworkDevice]
+                A list with network devices
+        """
+
+        # If not logged in; login
+        if self.connection.logged_in:
+            self.connection.login()
+
+        # Execute the API request
+        resources = self.connection.request(
+            method='GET',
+            endpoint='proxy/network/api/s/default/rest/wlanconf')
+
+        # Get the data and convert it to objects
+        data = resources.json()['data']
+        resources_converted = [NetworkSSID(
             resource) for resource in data]
 
         # Return the devicelist
