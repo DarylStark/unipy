@@ -36,6 +36,7 @@ class NetworkDevice(UnipyObject):
     device_id = ObjectField(type=str, api_field='device_id')
     uplink = ObjectField(type=str, api_field='uplink')
     state = ObjectField(type=int, api_field='state')
+    # 1 = Online, 5 = Getting ready
     last_seen = ObjectField(type=int, api_field='last_seen')
     upgradable = ObjectField(type=bool, api_field='upgradable')
     known_cfgversion = ObjectField(type=str, api_field='known_cfgversion')
