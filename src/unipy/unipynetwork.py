@@ -3,6 +3,7 @@
 
 from typing import Optional
 from unipy.networkclient import NetworkActiveClient, NetworkInactiveClient
+from unipy.networkfirewall import NetworkFirewallGroup, NetworkFirewallRule
 from unipy.networkssid import NetworkSSID
 from unipy.unipyconnection import UnipyConnection
 from unipy.networkdevice import NetworkDevice, NetworkDeviceUAP, NetworkDeviceUGW, NetworkDeviceUSW
@@ -176,6 +177,66 @@ class UnipyNetwork:
         # Get the data and convert it to objects
         data = resources.json()['data']
         resources_converted = [NetworkSSID(
+            resource) for resource in data]
+
+        # Return the devicelist
+        return resources_converted
+
+    def get_firewall_groups(self) -> list[NetworkFirewallGroup]:
+        """ Method to get all groups defined for the firewall
+
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            list[NetworkDevice]
+                A list with network devices
+        """
+
+        # If not logged in; login
+        if self.connection.logged_in:
+            self.connection.login()
+
+        # Execute the API request
+        resources = self.connection.request(
+            method='GET',
+            endpoint='proxy/network/api/s/default/rest/firewallgroup')
+
+        # Get the data and convert it to objects
+        data = resources.json()['data']
+        resources_converted = [NetworkFirewallGroup(
+            resource) for resource in data]
+
+        # Return the devicelist
+        return resources_converted
+
+    def get_firewall_rules(self) -> list[NetworkFirewallRule]:
+        """ Method to get all rules defined for the firewall
+
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            list[NetworkDevice]
+                A list with network devices
+        """
+
+        # If not logged in; login
+        if self.connection.logged_in:
+            self.connection.login()
+
+        # Execute the API request
+        resources = self.connection.request(
+            method='GET',
+            endpoint='proxy/network/api/s/default/rest/firewallrule')
+
+        # Get the data and convert it to objects
+        data = resources.json()['data']
+        resources_converted = [NetworkFirewallRule(
             resource) for resource in data]
 
         # Return the devicelist
