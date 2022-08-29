@@ -115,7 +115,7 @@ class UnipyNetwork:
             class_object = object_types[data['type']]
         else:
             self.logger.warning(
-                f'No class configured for devicetype "{data["type"]}"')
+                f'No class configured for devicetype "{data["type"]}" in "device_factory"')
 
         # Create the object
         new_object = class_object(data)

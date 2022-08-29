@@ -19,7 +19,7 @@ class UnipyObject:
         the API
     """
 
-    object_model = dict()
+    __model = dict()
 
     def __init__(self,
                  data: Optional[dict] = None,
@@ -39,54 +39,28 @@ class UnipyObject:
         # Create a logger
         self.logger = getLogger(type(self).__name__)
 
-        # Inherit the fields
-        self.set_fields()
-
         # Set the binding
         self.binding: Optional[UnipyApplication] = binding
 
         # Empty dict with API fields
         self.api_fields = dict()
 
-        # Loop through all fields in the model, set the
-        # default value and add it to the API cache
-        for field, model in self.object_model.items():
-            self.api_fields[model.api_field] = field
-            if model.default:
-                setattr(self, field, model.default)
-            else:
-                setattr(self, field, model.type())
+        # Loop through all fields in the model, add it to the
+        # API cache and set the attribute with either the
+        # configured default value, or the default value for
+        # the configured object type
+        for field in dir(self.__class__):
+            attr = getattr(self, field)
+            if type(attr) is ObjectField:
+                self.api_fields[attr.api_field] = field
+                self.__model[field] = attr
+                if attr.default:
+                    setattr(self, field, attr.default)
+                else:
+                    setattr(self, field, attr.type())
 
         if data:
             self.set_from_api(data)
-
-    def set_fields(self) -> None:
-        """ Method that makes sure the model is inherited
-            from base classes
-
-            Parameters
-            ----------
-            None
-
-            Returns
-            -------
-            None
-        """
-        # Get the path till we reach the last base class
-        base_path = list()
-        current_base = self.__class__
-        while current_base is not object:
-            bases = current_base.__bases__
-            if bases[0] is not object:
-                base_path.insert(0, bases[0])
-            current_base = bases[0]
-
-        # Merge all models
-        new_model = base_path[0].object_model
-        for base in base_path[1:]:
-            new_model.update(base.object_model)
-        new_model.update(self.object_model)
-        self.object_model = new_model
 
     def bind(self, unipynet_object: UnipyApplication) -> None:
         """ Method to bind this object to a UnipyNetwork
@@ -127,9 +101,12 @@ class UnipyObject:
         for field, value in data.items():
             if field in self.api_fields:
                 field_name = self.api_fields[field]
-                field_type = self.object_model[field_name].type
+                field_type = self.__model[field_name].type
                 if type(value) is not field_type:
-                    self.logger.warning(
-                        f'Field "{field_name}" should be of type "{field_type.__name__}" but API gives "{type(value).__name__}". Converting.')
-                    value = field_type(value)
+                    try:
+                        value = field_type(value)
+                    except ValueError as error:
+                        self.logger.warning(
+                            f'Field "{field_name}" should be of type "{field_type.__name__}" but API gives "{type(value).__name__}". Converting failed!')
+                        self.logger.debug(f'Error: {error}')
                 setattr(self, field_name, value)
