@@ -10,7 +10,7 @@ from unipy.unipyapplication import UnipyApplication
 @dataclass
 class ObjectField:
     type: type
-    api_field: str
+    api_field: Optional[str] = None
     default: Any = None
 
 
@@ -54,10 +54,7 @@ class UnipyObject:
             if type(attr) is ObjectField:
                 self.api_fields[attr.api_field] = field
                 self.__model[field] = attr
-                if attr.default:
-                    setattr(self, field, attr.default)
-                else:
-                    setattr(self, field, attr.type())
+                setattr(self, field, attr.default)
 
         if data:
             self.set_from_api(data)
